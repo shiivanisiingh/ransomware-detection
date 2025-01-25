@@ -1,53 +1,48 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Cryptocurrency Transaction Monitoring System</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predictive Modeling Example</title>
     <style>
-        body {font-family: Arial, sans-serif; max-width: 800px; margin: 20px auto}
-        pre {background: #f8f9fa; padding: 15px; border-radius: 5px}
-        .cost-table {border-collapse: collapse; margin: 20px 0}
-        .cost-table td, .cost-table th {border: 1px solid #ddd; padding: 8px}
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        code {
+            display: block;
+            background: #f4f4f4;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+        pre {
+            background-color: #f8f8f8;
+            padding: 15px;
+            border-radius: 5px;
+            overflow: auto;
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
     </style>
 </head>
 <body>
-    <h1>Financial Crime Detection System</h1>
-    
-    <h2>Business Context: Cryptocurrency Exchange</h2>
-    <p><strong>Perspective:</strong> Chief Risk Officer at a major crypto exchange<br>
-    <strong>Objective:</strong> Detect ransomware payments in Bitcoin transactions while minimizing business disruption</p>
+    <h1>Predictive Modeling in Business: A Case Study</h1>
 
-    <h3>Error Type Consequences</h3>
-    <table class="cost-table">
-        <tr>
-            <th>Error Type</th>
-            <th>Definition</th>
-            <th>Cost Impact</th>
-        </tr>
-        <tr>
-            <td>False Positive</td>
-            <td>Legitimate transaction flagged as suspicious</td>
-            <td>$150 investigation cost + customer friction</td>
-        </tr>
-        <tr>
-            <td>False Negative</td>
-            <td>Ransomware payment undetected</td>
-            <td>$1.5M avg. ransom + $500k regulatory fines</td>
-        </tr>
-    </table>
+    <h2>Business Scenario</h2>
+    <p>
+        Imagine you are working for a cybersecurity firm that specializes in detecting ransomware activity.
+        Your goal is to develop a predictive model to classify Bitcoin transactions as either "benign" or
+        "potential ransomware activity." The predictions will help the company proactively block suspicious
+        transactions and protect its clients' funds. In this context, your model must minimize costly
+        classification errors.
+    </p>
 
-    <h3>Cost Ratio Justification (1:100 FP:FN)</h3>
-    <p>Based on 2023 industry data:
-    <ul>
-        <li>Average ransomware payment: $1.5M (Chainalysis Report)</li>
-        <li>Typical investigation cost: $150 per alert</li>
-        <li>Regulatory fine multiplier: 3× illicit transaction value</li>
-    </ul>
-    <em>Financial impact ratio:</em> ($1.5M + $500k) / $150 = 13,333 → Rounded to 1:100 for model stability</p>
-
-    <h2>Implementation Code</h2>
-    <pre><code>
-# Transaction monitoring system core
-import pandas as pd
+    <h2>Code Implementation</h2>
+    <pre><code>import pandas as pd
 import numpy as np
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler
@@ -55,45 +50,109 @@ from sklearn.feature_selection import VarianceThreshold
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import StratifiedKFold
 from imblearn.over_sampling import SMOTE
+from sklearn.exceptions import ConvergenceWarning
 from sklearn.calibration import CalibratedClassifierCV
+import warnings
 
-# Load transaction data
-data = pd.read_csv('BitcoinHeistData.csv')
+# Suppress convergence warnings
+warnings.filterwarnings("ignore", category=ConvergenceWarning)
 
-# Convert to binary labels
-data['label'] = np.where(data['label'] == 'white', 0, 1)
-y = data['label'].astype(int)
+# Step 1: Load Data & Verify Class Distribution
+data = pd.read_csv('/content/drive/MyDrive/ML/Dataset/BitcoinHeistData.csv')
+
+# Check raw label distribution
+print("Raw Label Distribution:")
+print(data['label'].value_counts())
+
+# Step 2: Binary Label Conversion
+if 'white' in data['label'].values and (data['label'] != 'white').any():
+    data['label'] = np.where(data['label'] == 'white', 0, 1)
+    y = data['label'].astype(int)
+else:
+    raise ValueError("Dataset contains only one class (no ransomware samples)")
+
+# Validate binary conversion
+print("\nBinary Class Distribution:")
+print(pd.Series(y).value_counts())
+
+# Step 3: Data Preprocessing
 X = data.drop(columns=['label', 'address'])
+imputer = SimpleImputer(strategy='median')
+X_imputed = imputer.fit_transform(X)
+selector = VarianceThreshold(threshold=0)
+X_filtered = selector.fit_transform(X_imputed)
+X_filtered[:, 0] = np.log1p(X_filtered[:, 0])
+scaler = StandardScaler()
+X_processed = scaler.fit_transform(X_filtered)
+assert not np.isnan(X_processed).any(), "NaN values detected after preprocessing"
 
-# Preprocessing pipeline
-X_processed = StandardScaler().fit_transform(
-    VarianceThreshold(threshold=0).fit_transform(
-        SimpleImputer(strategy='median').fit_transform(X)
-    )
-)
-
-# Conditional resampling
-if y.mean() < 0.05:
-    X_resampled, y_resampled = SMOTE(sampling_strategy=0.5).fit_resample(X_processed, y)
+# Step 4: Handle Class Imbalance with SMOTE
+minority_ratio = y.sum() / len(y)
+if minority_ratio < 0.05:
+    smote = SMOTE(sampling_strategy=0.5, random_state=1)
+    X_resampled, y_resampled = smote.fit_resample(X_processed, y)
+    print("\nPost-SMOTE Class Distribution:")
+    print(pd.Series(y_resampled).value_counts())
 else:
     X_resampled, y_resampled = X_processed.copy(), y.copy()
 
-# Cost-optimized threshold finder
-def calculate_cost(y_true, y_pred):
-    """FP:FN = 1:100 based on financial impact analysis"""
-    fp = np.sum((y_pred == 1) & (y_true == 0))
-    fn = np.sum((y_pred == 0) & (y_true == 1))
-    return 100 * fp + 10000 * fn
+# Step 5: Stratified Cross-Validation Setup
+skf = StratifiedKFold(n_splits=10, shuffle=True, random_state=1)
+fold_vec = np.zeros(len(y_resampled), dtype=int)
 
-# ... rest of original threshold optimization code ...
-    </code></pre>
+for fold_num, (_, test_idx) in enumerate(skf.split(X_resampled, y_resampled)):
+    fold_vec[test_idx] = fold_num + 1
 
-    <h3>Operational Implementation</h3>
-    <p>When probability ≥ optimal threshold (e.g., 0.28):</p>
-    <ol>
-        <li>Automatically freeze transaction</li>
-        <li>Notify financial crime investigation team</li>
-        <li>Initiate regulatory reporting workflow</li>
-    </ol>
+# Step 6: Threshold Optimization with Cost Calculation
+def calculate_cost(y_actual, y_pred):
+    FP = np.sum((y_pred == 1) & (y_actual == 0))
+    FN = np.sum((y_pred == 0) & (y_actual == 1))
+    return 100 * FP + 1000 * FN  
+
+thresholds = np.linspace(0.01, 0.99, 100)
+out = np.zeros((100, 10))
+
+for i in range(10):
+    test_mask = (fold_vec == i+1)
+    X_train, X_test = X_resampled[~test_mask], X_resampled[test_mask]
+    y_train, y_test = y_resampled[~test_mask], y_resampled[test_mask]
+
+    if len(np.unique(y_train)) < 2:
+        print(f"Skipping Fold {i+1} - Insufficient class diversity")
+        continue
+
+    model = CalibratedClassifierCV(LogisticRegression(), method='sigmoid')
+    model.fit(X_train, y_train)
+    proba = model.predict_proba(X_test)[:, 1]
+
+    for j in range(100):
+        pred = (proba >= thresholds[j]).astype(int)
+        out[j, i] = calculate_cost(y_test, pred)
+
+mean_costs = np.nanmean(out, axis=1)  
+best_idx = np.nanargmin(mean_costs)
+best_threshold = thresholds[best_idx]
+
+print(f"\nOptimal Threshold: {best_threshold:.3f}")
+print(f"Associated Cost: ${mean_costs[best_idx]:,.2f}")
+
+if best_idx in [0, 99]:
+    print("\nWarning: Optimal threshold at extreme value")</code></pre>
+
+    <h2>Understanding False Positives and False Negatives</h2>
+    <p>
+        A <strong>false positive</strong> occurs when a benign transaction is incorrectly classified as ransomware activity.
+        This may lead to unnecessary blocking of legitimate transactions, causing inconvenience to customers and loss of trust.
+    </p>
+    <p>
+        A <strong>false negative</strong> happens when ransomware activity is not detected, allowing malicious transactions to proceed.
+        This can result in financial loss and damage to the company's reputation.
+    </p>
+
+    <h2>Error Costs</h2>
+    <p>
+        In this scenario, a false negative is costlier because undetected ransomware activity has severe consequences.
+        The cost ratio is set to 1:10, reflecting the higher importance of avoiding false negatives. This ratio was determined based on a detailed analysis of the business impact, ensuring alignment with operational priorities and risk management strategies.
+    </p>
 </body>
 </html>
