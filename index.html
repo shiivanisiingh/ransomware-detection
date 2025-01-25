@@ -9,6 +9,7 @@
             font-family: Arial, sans-serif;
             margin: 20px;
             line-height: 1.6;
+            color: #333;
         }
         code {
             display: block;
@@ -25,7 +26,22 @@
             overflow: auto;
         }
         h1, h2, h3 {
-            color: #333;
+            color: #2c3e50;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
         }
     </style>
 </head>
@@ -34,11 +50,10 @@
 
     <h2>Business Scenario</h2>
     <p>
-        Imagine you are working for a cybersecurity firm that specializes in detecting ransomware activity.
-        Your goal is to develop a predictive model to classify Bitcoin transactions as either "benign" or
-        "potential ransomware activity." The predictions will help the company proactively block suspicious
-        transactions and protect its clients' funds. In this context, your model must minimize costly
-        classification errors.
+        I work for a cybersecurity firm specializing in detecting ransomware activity. My objective is to develop
+        a predictive model to classify Bitcoin transactions as either "benign" or "potential ransomware activity."
+        The predictions will help the company proactively block suspicious transactions and protect clients' funds.
+        Minimizing costly classification errors is critical to achieving this objective.
     </p>
 
     <h2>Code Implementation</h2>
@@ -140,19 +155,32 @@ if best_idx in [0, 99]:
     print("\nWarning: Optimal threshold at extreme value")</code></pre>
 
     <h2>Understanding False Positives and False Negatives</h2>
-    <p>
-        A <strong>false positive</strong> occurs when a benign transaction is incorrectly classified as ransomware activity.
-        This may lead to unnecessary blocking of legitimate transactions, causing inconvenience to customers and loss of trust.
-    </p>
-    <p>
-        A <strong>false negative</strong> happens when ransomware activity is not detected, allowing malicious transactions to proceed.
-        This can result in financial loss and damage to the company's reputation.
-    </p>
+    <p>To better understand the errors, refer to the table below:</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Error Type</th>
+                <th>Description</th>
+                <th>Real-World Consequence</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>False Positive (FP)</td>
+                <td>Classifies a benign transaction as ransomware.</td>
+                <td>Leads to blocking legitimate transactions, causing inconvenience and trust issues.</td>
+            </tr>
+            <tr>
+                <td>False Negative (FN)</td>
+                <td>Fails to detect ransomware activity.</td>
+                <td>Allows malicious transactions, resulting in financial loss and reputational damage.</td>
+            </tr>
+        </tbody>
+    </table>
 
     <h2>Error Costs</h2>
     <p>
-        In this scenario, a false negative is costlier because undetected ransomware activity has severe consequences.
-        The cost ratio is set to 1:10, reflecting the higher importance of avoiding false negatives. This ratio was determined based on a detailed analysis of the business impact, ensuring alignment with operational priorities and risk management strategies.
+        In this scenario, a false negative is significantly costlier because undetected ransomware activity has severe consequences. The cost ratio is set to 1:10, reflecting the higher importance of avoiding false negatives. This ratio was determined based on a detailed analysis of the business impact, ensuring alignment with operational priorities and risk management strategies.
     </p>
 </body>
 </html>
