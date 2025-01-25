@@ -2,145 +2,103 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Bitcoin Ransomware Detection System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitcoin Ransomware Detector | GitHub Hosted</title>
     <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 2rem; }
-        h1 { color: #2c3e50; border-bottom: 2px solid #3498db; }
-        h2 { color: #34495e; margin-top: 1.5rem; }
-        pre { background: #f8f9fa; padding: 1rem; border-radius: 5px; overflow-x: auto; }
-        code { font-family: 'Courier New', monospace; }
-        table { border-collapse: collapse; margin: 1rem 0; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        .keyword { color: #0077aa; }
-        .comment { color: #999; }
-        .string { color: #669900; }
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --background: #f8f9fa;
+        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; 
+              line-height: 1.6; margin: 0; padding: 20px; max-width: 800px; margin: 0 auto; }
+        h1 { color: var(--primary); border-bottom: 2px solid var(--secondary); padding-bottom: 0.3em; }
+        pre { background: var(--background); padding: 1em; overflow-x: auto; border-radius: 3px; }
+        code { font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace; }
+        table { width: 100%; border-collapse: collapse; margin: 1em 0; }
+        th, td { padding: 6px 13px; border: 1px solid #dfe2e5; }
+        .highlight { color: #d73a49; }
+        .comment { color: #6a737d; }
     </style>
 </head>
 <body>
-    <h1>Automated Ransomware Transaction Detection System</h1>
+    <h1>🛡️ Bitcoin Ransomware Detection System</h1>
 
-    <!-- Business Context Section -->
-    <h2>Business Context: Financial Institution Perspective</h2>
-    <p>This system is designed for cryptocurrency exchanges to:</p>
-    <ul>
-        <li>Identify ransomware-related Bitcoin transactions in real-time</li>
-        <li>Comply with anti-money laundering (AML) regulations</li>
-        <li>Minimize operational costs from false alerts</li>
-    </ul>
+    <!-- Business Context -->
+    <h2>Business Context</h2>
+    <p><strong>Perspective:</strong> Cryptocurrency Exchange Compliance Team</p>
+    <p><strong>Objective:</strong> Balance fraud detection with operational efficiency</p>
 
-    <!-- Error Analysis -->
-    <h2>Error Type Consequences</h2>
+    <!-- Error Costs -->
+    <h2>Error Cost Analysis</h2>
     <table>
-        <tr>
-            <th>Error Type</th>
-            <th>Definition</th>
-            <th>Consequences</th>
-            <th>Cost Ratio</th>
-        </tr>
-        <tr>
-            <td><strong>False Positive</strong></td>
-            <td>Legitimate transaction flagged as suspicious</td>
-            <td>• $100 investigation cost<br>• Customer dissatisfaction</td>
-            <td>1 unit</td>
-        </tr>
-        <tr>
-            <td><strong>False Negative</strong></td>
-            <td>Missed ransomware transaction</td>
-            <td>• $100k average ransom loss<br>• $50k regulatory fine</td>
-            <td>100 units</td>
-        </tr>
+        <thead>
+            <tr>
+                <th>Error Type</th>
+                <th>Cost Ratio</th>
+                <th>Rationale</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>False Positive (FP)</td>
+                <td>1 unit</td>
+                <td>$100 manual review cost per false alert</td>
+            </tr>
+            <tr>
+                <td>False Negative (FN)</td>
+                <td>100 units</td>
+                <td>$10k avg. loss + $50k regulatory fines per missed case</td>
+            </tr>
+        </tbody>
     </table>
-
-    <!-- Cost Ratio Justification -->
-    <h2>Cost Ratio Justification (1:100)</h2>
-    <p>The 1:100 FP:FN ratio was determined through:</p>
-    <ul>
-        <li>Analysis of 2023 ransomware payout averages (Chainalysis Report)</li>
-        <li>Regulatory fine structures from FATF guidelines</li>
-        <li>Operational cost analysis from partner financial institutions</li>
-    </ul>
 
     <!-- Code Implementation -->
-    <h2>System Implementation</h2>
+    <h2>Implementation Code</h2>
     <pre><code>
-<span class="keyword">import</span> pandas <span class="keyword">as</span> pd
-<span class="keyword">import</span> numpy <span class="keyword">as</span> np
-<span class="keyword">from</span> sklearn.impute <span class="keyword">import</span> SimpleImputer
-<span class="keyword">from</span> sklearn.preprocessing <span class="keyword">import</span> StandardScaler
-<span class="keyword">from</span> sklearn.feature_selection <span class="keyword">import</span> VarianceThreshold
-<span class="keyword">from</span> sklearn.linear_model <span class="keyword">import</span> LogisticRegression
-<span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> StratifiedKFold
-<span class="keyword">from</span> imblearn.over_sampling <span class="keyword">import</span> SMOTE
-<span class="keyword">from</span> sklearn.calibration <span class="keyword">import</span> CalibratedClassifierCV
+<span class="highlight"># GitHub-compliant Python 3.10</span>
+<span class="highlight">import</span> pandas <span class="highlight">as</span> pd
+<span class="highlight">import</span> numpy <span class="highlight">as</span> np
 
-<span class="comment"># Load and prepare transaction data</span>
-data = pd.read_csv(<span class="string">'/content/drive/MyDrive/ML/Dataset/BitcoinHeistData.csv'</span>)
-data[<span class="string">'label'</span>] = np.where(data[<span class="string">'label'</span>] == <span class="string">'white'</span>, 0, 1)
-y = data[<span class="string">'label'</span>].astype(int)
-X = data.drop(columns=[<span class="string">'label'</span>, <span class="string">'address'</span>])
+<span class="comment"># Data loading with relative path for GitHub</span>
+<span class="highlight">try</span>:
+    df = pd.read_csv(<span class="highlight">'data/transactions.csv'</span>)  <span class="comment"># GitHub directory structure</span>
+<span class="highlight">except</span> FileNotFoundError:
+    <span class="highlight">raise</span> ValueError(<span class="highlight">"Dataset not found in /data directory"</span>)
 
-<span class="comment"># Preprocessing pipeline</span>
-processor = StandardScaler()
-X_processed = processor.fit_transform(
-    VarianceThreshold(threshold=0).fit_transform(
-        SimpleImputer(strategy=<span class="string">'median'</span>).fit_transform(X)
-    )
-)
-
-<span class="comment"># Adaptive class balancing</span>
-<span class="keyword">if</span> y.mean() < 0.05:
-    X_resampled, y_resampled = SMOTE(sampling_strategy=0.5).fit_resample(X_processed, y)
-<span class="keyword">else</span>:
-    X_resampled, y_resampled = X_processed.copy(), y.copy()
-
-<span class="comment"># Cost-sensitive threshold optimization</span>
-<span class="keyword">def</span> <span class="keyword">calculate_cost</span>(y_true, y_pred):
-    <span class="string">"""Custom cost function with 1:100 FP:FN ratio"""</span>
-    fp = np.sum((y_pred == 1) & (y_true == 0))  <span class="comment"># $100 per error</span>
-    fn = np.sum((y_pred == 0) & (y_true == 1))  <span class="comment"># $10,000 per error</span>
-    <span class="keyword">return</span> 100 * fp + 10000 * fn
-
-<span class="comment"># ... rest of original code ...</span>
+<span class="comment"># Cost function with GitHub-friendly formatting</span>
+<span class="highlight">def</span> calculate_cost(y_true: np.ndarray, y_pred: np.ndarray) -> float:
+    <span class="highlight">"""Implements 1:100 FP:FN cost ratio
+    Args:
+        y_true: Ground truth labels (0=legit, 1=ransomware)
+        y_pred: Predicted labels
+    Returns:
+        Total operational cost in USD
+    """</span>
+    fp = np.sum((y_pred == 1) & (y_true == 0))  <span class="comment"># Type I error</span>
+    fn = np.sum((y_pred == 0) & (y_true == 1))  <span class="comment"># Type II error</span>
+    <span class="highlight">return</span> 100 * fp + 10000 * fn  <span class="comment"># 1:100 ratio</span>
     </code></pre>
 
-    <!-- Design Decisions -->
-    <h2>Key Design Rationale</h2>
-    <table>
-        <tr>
-            <th>Component</th>
-            <th>Implementation Choice</th>
-            <th>Justification</th>
-        </tr>
-        <tr>
-            <td>Class Imbalance</td>
-            <td>Conditional SMOTE</td>
-            <td>Only activates when ransomware &lt;5% of transactions</td>
-        </tr>
-        <tr>
-            <td>Threshold Search</td>
-            <td>100-point grid (0.01-0.99)</td>
-            <td>Balances precision vs computational cost</td>
-        </tr>
-        <tr>
-            <td>Feature Scaling</td>
-            <td>Median Imputation + Standardization</td>
-            <td>Robust to transaction amount outliers</td>
-        </tr>
-    </table>
+    <!-- Repository Structure -->
+    <h2>GitHub Repository Setup</h2>
+    <pre>
+ransomware-detection/
+├── data/                   <span class="comment"># Sample data (excluded via .gitignore)</span>
+│   └── transactions.csv
+├── docs/                   <span class="comment"># GitHub Pages content</span>
+│   └── index.html          <span class="comment"># This file</span>
+├── .gitignore
+├── LICENSE                 <span class="comment"># MIT License</span>
+└── README.md               <span class="comment"># Project documentation</span>
+    </pre>
 
-    <!-- Deployment -->
-    <h2>Operational Deployment</h2>
-    <p>Recommended implementation workflow:</p>
+    <!-- Hosting Instructions -->
+    <h2>GitHub Pages Deployment</h2>
     <ol>
-        <li>New Bitcoin transaction received</li>
-        <li>Feature extraction (amount, timing, network features)</li>
-        <li>Model computes ransomware probability</li>
-        <li>If probability ≥ optimal threshold (e.g., 0.35):
-            <ul>
-                <li>Freeze transaction</li>
-                <li>Alert AML team</li>
-            </ul>
-        </li>
+        <li>Create repo: <code>github.com/[username]/ransomware-detection</code></li>
+        <li>Enable Pages: <em>Settings > Pages > Source: docs folder</em></li>
+        <li>Access live at: <code>https://[username].github.io/ransomware-detection</code></li>
     </ol>
 </body>
 </html>
