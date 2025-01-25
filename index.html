@@ -87,7 +87,7 @@ else:
     raise ValueError("Dataset contains only one class (no ransomware samples)")
 
 # Validate binary conversion
-print("\nBinary Class Distribution:")
+print("Binary Class Distribution:")
 print(pd.Series(y).value_counts())
 
 # Step 3: Data Preprocessing
@@ -106,7 +106,7 @@ minority_ratio = y.sum() / len(y)
 if minority_ratio < 0.05:
     smote = SMOTE(sampling_strategy=0.5, random_state=1)
     X_resampled, y_resampled = smote.fit_resample(X_processed, y)
-    print("\nPost-SMOTE Class Distribution:")
+    print("Post-SMOTE Class Distribution:")
     print(pd.Series(y_resampled).value_counts())
 else:
     X_resampled, y_resampled = X_processed.copy(), y.copy()
@@ -152,7 +152,7 @@ print(f"\nOptimal Threshold: {best_threshold:.3f}")
 print(f"Associated Cost: ${mean_costs[best_idx]:,.2f}")
 
 if best_idx in [0, 99]:
-    print("\nWarning: Optimal threshold at extreme value")</code></pre>
+    print("Warning: Optimal threshold at extreme value")</code></pre>
 
     <h2>Understanding False Positives and False Negatives</h2>
     <p>To better understand the errors, refer to the table below:</p>
