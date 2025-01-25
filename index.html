@@ -15,7 +15,7 @@
             display: block;
             background: #f4f4f4;
             border: 1px solid #ddd;
-            padding: 10px; 
+            padding: 10px;
             margin-bottom: 20px;
             overflow-x: auto;
         }
@@ -174,6 +174,49 @@ if best_idx in [0, 99]:
                 <td>False Negative (FN)</td>
                 <td>Fails to detect ransomware activity.</td>
                 <td>Allows malicious transactions, resulting in financial loss and reputational damage.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Important Steps and Justifications</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Step</th>
+                <th>Description</th>
+                <th>Reason for Implementation</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Load Data</td>
+                <td>Load the dataset and examine class distribution.</td>
+                <td>To understand the nature of the dataset and ensure balanced representation.</td>
+            </tr>
+            <tr>
+                <td>Binary Label Conversion</td>
+                <td>Convert labels to binary values (benign vs. ransomware).</td>
+                <td>Necessary for binary classification tasks.</td>
+            </tr>
+            <tr>
+                <td>Data Preprocessing</td>
+                <td>Handle missing values, remove low-variance features, and scale data.</td>
+                <td>To ensure data quality and prepare for effective model training.</td>
+            </tr>
+            <tr>
+                <td>Handle Imbalance</td>
+                <td>Apply SMOTE to balance class distribution.</td>
+                <td>To prevent bias toward the majority class.</td>
+            </tr>
+            <tr>
+                <td>Cross-Validation</td>
+                <td>Set up stratified K-fold cross-validation.</td>
+                <td>To evaluate model performance on diverse data splits.</td>
+            </tr>
+            <tr>
+                <td>Threshold Optimization</td>
+                <td>Determine the best probability threshold to minimize costs.</td>
+                <td>To balance false positive and false negative costs effectively.</td>
             </tr>
         </tbody>
     </table>
