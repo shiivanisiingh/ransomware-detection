@@ -1,63 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Predictive Modeling Example</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            line-height: 1.6;
-            color: #333;
-        }
-        code {
-            display: block;
-            background: #f4f4f4;
-            border: 1px solid #ddd;
-            padding: 10px;
-            margin-bottom: 20px;
-            overflow-x: auto;
-        }
-        pre {
-            background-color: #f8f8f8;
-            padding: 15px;
-            border-radius: 5px;
-            overflow: auto;
-        }
-        h1, h2, h3 {
-            color: #2c3e50;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-        th, td {
-            padding: 10px;
-            text-align: left;
-        }
-        th {
-            background-color: #f4f4f4;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bitcoin Heist Predictive Model</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      margin: 20px;
+    }
+    pre {
+      background: #f4f4f4;
+      padding: 10px;
+      border: 1px solid #ddd;
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+    table, th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+    }
+    th {
+      background-color: #f2f2f2;
+      text-align: left;
+    }
+    .highlight {
+      background-color: #e7f3fe;
+      border-left: 4px solid #2196F3;
+      padding: 10px;
+    }
+  </style>
 </head>
 <body>
-    <h1>Predictive Modeling in Business: A Case Study</h1>
+  <h1>Bitcoin Heist Predictive Model</h1>
 
-    <h2>Business Scenario</h2>
-    <p>
-        I work for a cybersecurity firm specializing in detecting ransomware activity. My objective is to develop
-        a predictive model to classify Bitcoin transactions as either "benign" or "potential ransomware activity."
-        The predictions will help the company proactively block suspicious transactions and protect clients' funds.
-        Minimizing costly classification errors is critical to achieving this objective.
-    </p>
+  <div class="highlight">
+    <p>This project aims to build a predictive model for identifying ransomware families from Bitcoin Heist data. The decisions made in the code below are tailored for a business scenario involving a cryptocurrency exchange company that aims to identify suspicious accounts associated with ransomware attacks. Early detection helps the company prevent fraudulent activities and protect legitimate users.</p>
+  </div>
 
-    <h2>Code Implementation</h2>
-    <pre><code>import pandas as pd
+  <h2>Python Code</h2>
+  <pre>
+# Import required libraries
+import pandas as pd
 import numpy as np
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler
@@ -74,20 +63,13 @@ warnings.filterwarnings("ignore", category=ConvergenceWarning)
 
 # Step 1: Load Data & Verify Class Distribution
 data = pd.read_csv('/content/drive/MyDrive/ML/Dataset/BitcoinHeistData.csv')
-
-# Check raw label distribution
 print("Raw Label Distribution:")
 print(data['label'].value_counts())
 
 # Step 2: Binary Label Conversion
-if 'white' in data['label'].values and (data['label'] != 'white').any():
-    data['label'] = np.where(data['label'] == 'white', 0, 1)
-    y = data['label'].astype(int)
-else:
-    raise ValueError("Dataset contains only one class (no ransomware samples)")
-
-# Validate binary conversion
-print("Binary Class Distribution:")
+data['label'] = np.where(data['label'] == 'white', 0, 1)
+y = data['label'].astype(int)
+print("\nBinary Class Distribution:")
 print(pd.Series(y).value_counts())
 
 # Step 3: Data Preprocessing
@@ -99,22 +81,18 @@ X_filtered = selector.fit_transform(X_imputed)
 X_filtered[:, 0] = np.log1p(X_filtered[:, 0])
 scaler = StandardScaler()
 X_processed = scaler.fit_transform(X_filtered)
-assert not np.isnan(X_processed).any(), "NaN values detected after preprocessing"
 
 # Step 4: Handle Class Imbalance with SMOTE
 minority_ratio = y.sum() / len(y)
 if minority_ratio < 0.05:
     smote = SMOTE(sampling_strategy=0.5, random_state=1)
     X_resampled, y_resampled = smote.fit_resample(X_processed, y)
-    print("Post-SMOTE Class Distribution:")
-    print(pd.Series(y_resampled).value_counts())
 else:
     X_resampled, y_resampled = X_processed.copy(), y.copy()
 
 # Step 5: Stratified Cross-Validation Setup
 skf = StratifiedKFold(n_splits=10, shuffle=True, random_state=1)
 fold_vec = np.zeros(len(y_resampled), dtype=int)
-
 for fold_num, (_, test_idx) in enumerate(skf.split(X_resampled, y_resampled)):
     fold_vec[test_idx] = fold_num + 1
 
@@ -122,18 +100,16 @@ for fold_num, (_, test_idx) in enumerate(skf.split(X_resampled, y_resampled)):
 def calculate_cost(y_actual, y_pred):
     FP = np.sum((y_pred == 1) & (y_actual == 0))
     FN = np.sum((y_pred == 0) & (y_actual == 1))
-    return 100 * FP + 1000 * FN  
+    return 100 * FP + 1000 * FN
 
 thresholds = np.linspace(0.01, 0.99, 100)
 out = np.zeros((100, 10))
-
 for i in range(10):
     test_mask = (fold_vec == i+1)
     X_train, X_test = X_resampled[~test_mask], X_resampled[test_mask]
     y_train, y_test = y_resampled[~test_mask], y_resampled[test_mask]
 
     if len(np.unique(y_train)) < 2:
-        print(f"Skipping Fold {i+1} - Insufficient class diversity")
         continue
 
     model = CalibratedClassifierCV(LogisticRegression(), method='sigmoid')
@@ -144,86 +120,44 @@ for i in range(10):
         pred = (proba >= thresholds[j]).astype(int)
         out[j, i] = calculate_cost(y_test, pred)
 
-mean_costs = np.nanmean(out, axis=1)  
+mean_costs = np.nanmean(out, axis=1)
 best_idx = np.nanargmin(mean_costs)
 best_threshold = thresholds[best_idx]
-
-print(f"Optimal Threshold: {best_threshold:.3f}")
+print(f"\nOptimal Threshold: {best_threshold:.3f}")
 print(f"Associated Cost: ${mean_costs[best_idx]:,.2f}")
+  </pre>
 
-if best_idx in [0, 99]:
-    print("Warning: Optimal threshold at extreme value")</code></pre>
+  <h2>Business Scenario and Error Analysis</h2>
+  <p>We consider a cryptocurrency exchange aiming to prevent transactions associated with ransomware. The predictions identify potentially harmful accounts.</p>
 
-    <h2>Understanding False Positives and False Negatives</h2>
-    <p>To better understand the errors, refer to the table below:</p>
-    <table>
-        <thead>
-            <tr>
-                <th>Error Type</th>
-                <th>Description</th>
-                <th>Real-World Consequence</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>False Positive (FP)</td>
-                <td>Classifies a benign transaction as ransomware.</td>
-                <td>Leads to blocking legitimate transactions, causing inconvenience and trust issues.</td>
-            </tr>
-            <tr>
-                <td>False Negative (FN)</td>
-                <td>Fails to detect ransomware activity.</td>
-                <td>Allows malicious transactions, resulting in financial loss and reputational damage.</td>
-            </tr>
-        </tbody>
-    </table>
+  <h3>Error Analysis</h3>
+  <table>
+    <tr>
+      <th>Error Type</th>
+      <th>Definition</th>
+      <th>Real-World Impact</th>
+      <th>Cost Ratio</th>
+    </tr>
+    <tr>
+      <td>False Positive</td>
+      <td>An innocent account flagged as ransomware.</td>
+      <td>Inconvenience to legitimate users, potential reputation loss.</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <td>False Negative</td>
+      <td>A ransomware account not flagged.</td>
+      <td>Continued ransomware activity, financial and reputational damage.</td>
+      <td>10</td>
+    </tr>
+  </table>
 
-    <h2>Important Steps and Justifications</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Step</th>
-                <th>Description</th>
-                <th>Reason for Implementation</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Load Data</td>
-                <td>Load the dataset and examine class distribution.</td>
-                <td>To understand the nature of the dataset and ensure balanced representation.</td>
-            </tr>
-            <tr>
-                <td>Binary Label Conversion</td>
-                <td>Convert labels to binary values (benign vs. ransomware).</td>
-                <td>Necessary for binary classification tasks.</td>
-            </tr>
-            <tr>
-                <td>Data Preprocessing</td>
-                <td>Handle missing values, remove low-variance features, and scale data.</td>
-                <td>To ensure data quality and prepare for effective model training.</td>
-            </tr>
-            <tr>
-                <td>Handle Imbalance</td>
-                <td>Apply SMOTE to balance class distribution.</td>
-                <td>To prevent bias toward the majority class.</td>
-            </tr>
-            <tr>
-                <td>Cross-Validation</td>
-                <td>Set up stratified K-fold cross-validation.</td>
-                <td>To evaluate model performance on diverse data splits.</td>
-            </tr>
-            <tr>
-                <td>Threshold Optimization</td>
-                <td>Determine the best probability threshold to minimize costs.</td>
-                <td>To balance false positive and false negative costs effectively.</td>
-            </tr>
-        </tbody>
-    </table>
-
-    <h2>Error Costs</h2>
-    <p>
-        In this scenario, a false negative is significantly costlier because undetected ransomware activity has severe consequences. The cost ratio is set to 1:10, reflecting the higher importance of avoiding false negatives. This ratio was determined based on a detailed analysis of the business impact, ensuring alignment with operational priorities and risk management strategies.
-    </p>
+  <h2>Key Decisions and Justifications</h2>
+  <ul>
+    <li><strong>Binary Label Conversion:</strong> Simplifies classification task into identifying ransomware vs. non-ransomware.</li>
+    <li><strong>SMOTE:</strong> Addresses class imbalance by oversampling the minority class.</li>
+    <li><strong>Custom Cost Function:</strong> Weighted cost of false negatives and false positives aligns with business priorities.</li>
+    <li><strong>Threshold Optimization:</strong> Ensures the model minimizes total cost for the business.</li>
+  </ul>
 </body>
 </html>
